@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+
+use JSON::XS qw'';
+use YAML::Tiny qw'';
+
+my $json = JSON::XS->new()->pretty->canonical;
+
+for (@ARGV) {
+        my $h = $json->decode(do { local $/ = undef; open my $fd, "<$_" or die; <$fd> });
+        next if (not $h or $@);
+
+        my $yaml_file;
+        next unless (($yaml_file) = ($_ =~ m/(.*)/));
+        $yaml_file =~ s/\.json$//;
+        $yaml_file .= '.yaml';
+
+        my $yaml = YAML::Tiny->new;
+        push @{$yaml}, $h;
+        $yaml->_dump_string();
+        $yaml->write($yaml_file);
+}
+exit 0;

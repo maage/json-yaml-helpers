@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+# -*- indent-tabs-mode: nil; cperl-indent-level: 4; -*-
+# vim: autoindent expandtab shiftwidth=4 softtabstop=4
+
+use JSON::PP;
+
+my $json = JSON::PP->new->pretty->canonical->space_before(0)->indent_length(2);
+
+for (@ARGV) {
+    my $h = $json->decode(do { local $/ = undef; open my $fd, "<$_" or die; <$fd> });
+    if ($h) {
+        open my $fd, ">$_" or die;
+        my $s = $json->encode($h);
+        $s =~ s/ $//g;
+        print { $fd } $s;
+    }
+}

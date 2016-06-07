@@ -1,0 +1,51 @@
+#!/bin/env python
+#
+# http://stackoverflow.com/questions/7255885/save-dump-a-yaml-file-with-comments-in-pyyaml
+#
+# pip install ruamel.yaml
+# https://pypi.python.org/pypi/ruamel.yaml
+#
+from __future__ import print_function
+
+import os.path
+from sys import argv
+
+import ruamel.yaml as yaml
+
+opt_noop = False
+
+def normalize(a):
+    print("normalize: ", a)
+    fd = file(a, 'r')
+    try:
+        y = yaml.load(fd, yaml.RoundTripLoader)
+    except yaml.YAMLError as e:
+        print("ERROR: ", a, e)
+        return
+    finally:
+        fd.close
+
+    if y is None:
+        #print("ERROR: ", a)
+        return
+
+    if opt_noop:
+        return
+
+    fd = file(a, 'w')
+    yaml.dump(y, stream=fd, Dumper=yaml.RoundTripDumper,
+              explicit_start=True,
+              width=120,
+             )
+    fd.close
+
+def main(argv):
+    if argv[1] == '--noop':
+        opt_noop = True
+        del argv[1]
+    for a in argv[1:]:
+        if os.path.isfile(a):
+            normalize(a)
+
+if __name__ == "__main__":
+    main(argv)
