@@ -45,6 +45,10 @@ def convert(a):
         return
 
     json_filename = re.sub('\.yaml', '.json', a)
+    json_filename = re.sub('\.yml', '.json', a)
+    if json_filename == a:
+        print("ERROR: bogus filename: ", a)
+        return
 
     fd = open(json_filename, 'w')
     s = json.dumps(y, default=datetime_encoder, sort_keys=True, indent=2)
